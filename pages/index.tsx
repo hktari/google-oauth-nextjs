@@ -1,5 +1,3 @@
-import Head from "next/head";
-
 import { CredentialResponse, GoogleOAuthProvider } from "@react-oauth/google";
 import { GoogleLogin } from "@react-oauth/google";
 import { useState } from "react";
@@ -10,10 +8,27 @@ export default function Home() {
   const [loginResponseMessage, setLoginResponseMessage] = useState("");
   const [loginResponseTitle, setLoginResponseTitle] = useState("");
 
-  const onGoogleLoginSuccess = (credentialResponse: CredentialResponse) => {
-    setLoginResponseTitle("Login Success");
-    setLoginResponseMessage(`Welcome ${credentialResponse.clientId}!`);
-    setShowNotification(true);
+  const onGoogleLoginSuccess = async (
+    credentialResponse: CredentialResponse
+  ) => {
+    try {
+      const response = await fetch("/api/login", {
+        method: "POST",
+        body: JSON.stringify({ credential: credentialResponse.credential }),
+      });
+
+      const user = await response.json();
+
+      setLoginResponseTitle("Login Success");
+      setLoginResponseMessage(`Welcome ${user.name}!`);
+    } catch (error) {
+      setLoginResponseTitle("Login Failed");
+      const errorMessage =
+        error instanceof Error ? error.message : "Something went wrong.";
+      setLoginResponseMessage(errorMessage);
+    } finally {
+      setShowNotification(true);
+    }
   };
 
   const onGoogleLoginFailed = () => {
