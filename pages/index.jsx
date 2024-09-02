@@ -46,7 +46,7 @@ export default function Home() {
                 </a>
               </div>
             </div>
-            <button class="cursor-pointer py-2 px-4 block mt-6 bg-indigo-500 text-white font-bold w-full text-center rounded">
+            <button disabled class="cursor-pointer py-2 px-4 block mt-6 bg-indigo-500 text-white font-bold w-full text-center rounded">
               Login
             </button>
           </form>
