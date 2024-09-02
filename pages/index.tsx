@@ -2,6 +2,7 @@ import { CredentialResponse, GoogleOAuthProvider } from "@react-oauth/google";
 import { GoogleLogin } from "@react-oauth/google";
 import { useState } from "react";
 import Notification from "../components/notification";
+import { LoginResponseData } from "./api/login";
 
 export default function Home() {
   const [showNotification, setShowNotification] = useState(false);
@@ -14,13 +15,20 @@ export default function Home() {
     try {
       const response = await fetch("/api/login", {
         method: "POST",
-        body: JSON.stringify({ credential: credentialResponse.credential }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(credentialResponse),
       });
 
-      const user = await response.json();
+      const loginResponse = await response.json() as LoginResponseData;
+
+      if (!response.ok) {
+        throw new Error(loginResponse.error);
+      }
 
       setLoginResponseTitle("Login Success");
-      setLoginResponseMessage(`Welcome ${user.name}!`);
+      setLoginResponseMessage(`Welcome ${loginResponse.user.name}!`);
     } catch (error) {
       setLoginResponseTitle("Login Failed");
       const errorMessage =
