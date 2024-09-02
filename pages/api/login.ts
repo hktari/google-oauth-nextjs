@@ -1,7 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import * as jose from "jose";
+import { CredentialResponse } from "@react-oauth/google";
 
-type ResponseData = {
+export type LoginResponseData = {
   error?: string;
   user?: {
     name: string;
@@ -10,14 +11,15 @@ type ResponseData = {
 
 export default function handler(
   req: NextApiRequest,
-  res: NextApiResponse<ResponseData>
+  res: NextApiResponse<LoginResponseData>
 ) {
-  const credential = req.body.credential;
-  if (!credential) {
+  const credentialResponse = req.body as CredentialResponse;
+  console.log(req.body);
+  if (!credentialResponse) {
     res.status(400).json({ error: "Credential is required." });
   }
 
-  const jwt = jose.decodeJwt(credential);
+  const jwt = jose.decodeJwt(credentialResponse.credential);
 
   res.status(200).json({
     user: {
